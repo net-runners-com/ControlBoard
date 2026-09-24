@@ -22,8 +22,9 @@ export default function controlboard({ config = "./controlboard.config.js" } = {
         updateConfig({
           vite: {
             plugins: [configPlugin(configPath)],
-            /* Workers には MessageChannel がない。react-dom の edge 版を使う。 */
-            resolve: { alias: { "react-dom/server": "react-dom/server.edge" } },
+            /* Workers には MessageChannel がない。本番ビルドだけ react-dom の edge 版を使う
+               （開発サーバーは Node で動くので不要。入れると CJS のまま読まれて落ちる）。 */
+            ...(command === "build" ? { resolve: { alias: { "react-dom/server": "react-dom/server.edge" } } } : {}),
           },
         });
         for (const r of ROUTES) injectRoute({ pattern: r.pattern, entrypoint: r.file, prerender: false });
@@ -32,6 +33,15 @@ export default function controlboard({ config = "./controlboard.config.js" } = {
           logger.info("管理画面をビルドしています");
           await buildAdmin({ configPath, outDir: resolve(root, "public/admin") });
         }
+      },
+      /* 開発サーバーは /admin/ をフォルダの index.html に解決しない。本番（Pages）と同じにする。 */
+      "astro:server:setup": ({ server }) => {
+        server.middlewares.use((req, res, next) => {
+          if (req.url === "/admin" || req.url === "/admin/" || req.url.startsWith("/admin/?")) {
+            req.url = "/admin/index.html" + (req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "");
+          }
+          next();
+        });
       },
       "astro:build:done": async ({ dir }) => {
         await appendFile(new URL("_headers", dir), ADMIN_HEADERS);

@@ -1,0 +1,21 @@
+---
+import { seoFor, orgJsonLd } from "@controlboard/core/seo";
+const { pageId, content } = Astro.props;
+const seo = seoFor(pageId, content, Astro.url);
+const primary = (content.theme && content.theme.primary) || "#1f6feb";
+---
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.desc} />
+    <link rel="canonical" href={seo.canonical} />
+    <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd(content))} />
+    <style set:html={`:root{--primary:${primary}} body{font-family:sans-serif;margin:0;padding:16px} .pg-hero h1{color:var(--primary)}`} />
+  </head>
+  <body>
+    <slot />
+    <footer data-testid="tel">{content.contact && content.contact.tel}</footer>
+  </body>
+</html>

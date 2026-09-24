@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import RichText from "./RichText.jsx";
-import { newsDateISO, newsComplete } from "../../src/lib/news.js";
+import { newsDateISO, newsComplete } from "@controlboard/core/runtime/news";
 
 /* お知らせ管理: 一覧 → 1件を開いて編集、というかたちに。
    全件を縦に並べると件数が増えたときに探せなくなるため。 */

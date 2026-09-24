@@ -1,0 +1,23 @@
+---
+import { getContent } from "@controlboard/core/runtime/content";
+import Base from "../layouts/Base.astro";
+const content = await getContent(Astro.locals.runtime.env, Astro.url);
+---
+<Base pageId="contact" content={content}>
+  <form id="f">
+    <input name="name" placeholder="お名前" required />
+    <input name="mail" type="email" placeholder="メール" required />
+    <textarea name="detail" required></textarea>
+    <button>送信</button>
+  </form>
+  <p id="done" hidden>送信しました</p>
+  <script>
+    const f = document.getElementById("f");
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(f));
+      const res = await fetch("/api/inquiry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) document.getElementById("done").hidden = false;
+    });
+  </script>
+</Base>

@@ -1,5 +1,5 @@
 import React, { useEffect, useId, useState } from "react";
-import { PAGES, PAGE_IDS } from "../../src/lib/page.js";
+import { PAGES, PAGE_IDS } from "@controlboard/core/runtime/pages";
 
 /* リンク管理: 配布先ごとに短いアドレスを発行して、どこから来たか数える。
    LINE・Instagram・名刺など、あとから経路を分けたいものに1本ずつ配る。 */
@@ -18,7 +18,7 @@ const WHERE = ["LINE", "Instagram", "Threads", "X（旧Twitter）", "Facebook", 
 const NOTES = ["公式アカウントのプロフィール", "投稿に記載", "ストーリーズ", "名刺に印刷", "配布チラシ", "看板・のぼり", "メールの署名", "紹介用"];
 /* サイトのページはそのまま候補にする。外部URLは自由入力で。 */
 const DESTS = PAGE_IDS
-  .filter((id) => id !== "newsArticle")
+  .filter((id) => !PAGES[id].template)
   .map((id) => ({ v: PAGES[id].url, label: PAGES[id].label }));
 
 function Field({ label, list, options, value, onChange, placeholder, hint, required }) {

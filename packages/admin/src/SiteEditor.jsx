@@ -2,11 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Puck, usePuck } from "@measured/puck";
 import "@measured/puck/puck.css";
-import { homeConfig, subConfig, setRichTextRenderer, setImageRenderer } from "../../src/puck/config.jsx";
+import config from "virtual:controlboard/config";
+import { setRichTextRenderer, setImageRenderer } from "@controlboard/core/puck";
+const { home: homeConfig, sub: subConfig } = config.blocks;
+const TEMPLATE_IDS = Object.keys(config.pages).filter((id) => config.pages[id].template);
 import {
   PAGES, PAGE_IDS, allPageIds, customPages, pageDef, isCustomId, slugOfId, cleanSlug,
   DELETABLE_PAGE_IDS, hiddenPageIds,
-} from "../../src/lib/page.js";
+} from "@controlboard/core/runtime/pages";
 
 /* 日本語入力に耐える入力欄。
 
@@ -46,7 +49,7 @@ const noteOf = (id, content) => {
   const p = pageDef(id, content);
   return (PAGES[id] && PAGES[id].note) || (p && p.url) || "";
 };
-import { newsHref } from "../../src/lib/news.js";
+import { newsHref } from "@controlboard/core/runtime/news";
 import { PagePreviewModal, registerLabels, normalizeDoc } from "./preview.jsx";
 import RichText from "./RichText.jsx";
 import InlineRich from "./InlineRich.jsx";
@@ -79,7 +82,7 @@ const fieldTransforms = {
     if (fields[k] && fields[k].label) registerLabels({ [k]: fields[k].label });
     if (fields[k] && fields[k].arrayFields) take(fields[k].arrayFields);
   });
-  take(cfg.root.fields);
+  take((cfg.root || {}).fields);
   Object.keys(cfg.components).forEach((name) => {
     registerLabels({ [name]: cfg.components[name].label || name });
     take(cfg.components[name].fields);
@@ -113,7 +116,8 @@ function useCanvasStyles(ready, zoom) {
         const link = doc.createElement("link");
         link.id = "site-preview-css";
         link.rel = "stylesheet";
-        link.href = "/site-preview.css";
+        /* サイトの見た目を編集枠に写す CSS。設定がなければ Puck の素の見た目。 */
+        if (config.site.canvasCss) link.href = config.site.canvasCss;
         doc.head.appendChild(link);
         if (doc.body) doc.body.style.background = "#fff";
       }
@@ -267,12 +271,15 @@ function FieldsSheet() {
 /* ページに部品を足すボタン。Puck の部品一覧は左の引き出しにあるが、この画面
    では引き出しを閉じているので、よく使うものを画面の隅に出しておく。足した
    ものはページの一番下に入る。 */
-const FAB_QUICK = [
-  { type: "RichSection", t: "テキスト", d: "見出しと本文" },
-  { type: "ImageBlock", t: "写真", d: "画像を1枚" },
-];
+/* すぐ出す部品は、サイトの Puck 設定の quick（[{ type, t, d }]）。無ければ先頭の2つ。 */
+function quickOf(cfg) {
+  const comps = cfg.components || {};
+  const list = cfg.quick || Object.keys(comps).slice(0, 2).map((type) => ({ type, t: comps[type].label || type }));
+  return list.filter((q) => comps[q.type]);
+}
 function AddFab() {
   const { appState, config, dispatch } = usePuck();
+  const FAB_QUICK = quickOf(config);
   const [open, setOpen] = useState(false);
   const [all, setAll] = useState(false);
   const close = () => { setOpen(false); setAll(false); };
@@ -296,7 +303,7 @@ function AddFab() {
           <div className="se-fab-menu">
             {FAB_QUICK.map((q) => (
               <button key={q.type} type="button" className="se-fab-it" onClick={() => add(q.type)}>
-                <b>{q.t}</b><small>{q.d}</small>
+                <b>{q.t}</b>{q.d ? <small>{q.d}</small> : null}
               </button>
             ))}
             {all ? Object.keys(cats).map((k) => (
@@ -347,7 +354,7 @@ function EditorHeader({ actions, picker, zoom, onZoom }) {
 
 /* One page of the site, edited in Puck. `saved` is what is live right now;
    `draft` is whatever the editor currently holds, so the preview can diff. */
-const ZOOM_KEY = "compass.editorZoom";
+const ZOOM_KEY = "controlboard.editorZoom";
 function PageEditor({ pageId, toast, picker, onDirtyChange, onSaved }) {
   const [zoom, setZoom] = useState(() => Number(localStorage.getItem(ZOOM_KEY)) || 1);
   const [saved, setSaved] = useState(null);
@@ -367,7 +374,7 @@ function PageEditor({ pageId, toast, picker, onDirtyChange, onSaved }) {
 
   /* The article layout has no page of its own; preview it on the newest
      announcement so what opens is a real article. */
-  const previewPath = pageId === "newsArticle" && (site.news || [])[0]
+  const previewPath = PAGES[pageId] && PAGES[pageId].template && (site.news || [])[0]
     ? newsHref(site.news[0])
     : def.url;
 
@@ -509,7 +516,7 @@ function SettingsPreview({ content }) {
         </div>
       </div>
       <div className="st-range se-cfgprev-pages">
-        {PAGE_IDS.filter((id) => id !== "newsArticle").map((id) => (
+        {PAGE_IDS.filter((id) => !PAGES[id].template).map((id) => (
           <button key={id} className={path === PAGES[id].url ? "on" : ""} onClick={() => setPath(PAGES[id].url)}>
             {PAGES[id].label}
           </button>
@@ -546,14 +553,14 @@ export default function SiteEditor({ toast, content, settingsPanel, onSaveKeys, 
   const grabbed = useRef(null);
   /* トップは常に先頭、記事ページはページではなく枠なので、どちらも
      並べ替えの対象から外す。 */
-  const movable = allPageIds(content).filter((id) => id !== "home" && id !== "newsArticle");
+  const movable = allPageIds(content).filter((id) => id !== "home" && !(PAGES[id] && PAGES[id].template));
   /* 並べ替えはその場で保存する。ページを切り替える途中の操作なので、
      別に保存ボタンを押させると忘れられる。 */
   const move = (from, to) => {
     if (from == null || from === to) return;
     const next = movable.slice();
     next.splice(to, 0, next.splice(from, 1)[0]);
-    if (onPageOrder) onPageOrder(["home"].concat(next, "newsArticle"));
+    if (onPageOrder) onPageOrder(["home"].concat(next, TEMPLATE_IDS));
   };
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
@@ -749,12 +756,12 @@ export default function SiteEditor({ toast, content, settingsPanel, onSaveKeys, 
                 ＋ ページを追加
               </button>
             )}
-            <div className="se-pop-h">ひな型</div>
-            {plainRow("newsArticle")}
+            {TEMPLATE_IDS.length ? <div className="se-pop-h">ひな型</div> : null}
+            {TEMPLATE_IDS.map((id) => plainRow(id))}
             <div className="se-pop-h">サイト全体</div>
             <button className={"se-pop-it" + (tab === "settings" ? " on" : "")} onClick={() => go("settings")}>
               <span className="se-pop-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3.2" /><path d="M20.5 13a8.5 8.5 0 0 0 0-2l2-1.5-2-3.5-2.4 1a8.5 8.5 0 0 0-1.7-1L16 3h-4l-.4 2.6a8.5 8.5 0 0 0-1.7 1l-2.4-1-2 3.5L7.5 11a8.5 8.5 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a8.5 8.5 0 0 0 1.7 1L12 21h4l.4-2.6a8.5 8.5 0 0 0 1.7-1l2.4 1 2-3.5z" /></svg></span>
-              <span className="se-pop-txt"><b>共通設定</b><small>配色・電話・住所・SNS</small></span>
+              <span className="se-pop-txt"><b>共通設定</b><small>{config.settings.map((g) => g.group).join("・")}</small></span>
               {isDirty("settings") ? <span className="acp-pvdot" /> : null}
             </button>
           </div>
@@ -770,7 +777,7 @@ export default function SiteEditor({ toast, content, settingsPanel, onSaveKeys, 
       {isPage ? <PageEditor key={tab} pageId={tab} toast={toast} picker={picker} onSaved={onPageSaved} onDirtyChange={(fn) => { dirtyCheck.current = fn; }} /> : (
         <div className="acp-scroll se-cfg">
           <p className="acp-lead">
-            電話番号・住所・メール・SNS・配色はサイト全体（ヘッダー・フッター・会社概要など）で使われます。
+            ここで決めた内容はサイト全体（ヘッダー・フッターなど）で使われます。
           </p>
           <div className="se-cfg-cols">
             <div className="se-cfg-form">{settingsPanel}</div>

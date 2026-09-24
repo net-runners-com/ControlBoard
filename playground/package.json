@@ -1,0 +1,23 @@
+{
+  "name": "playground",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "e2e": "playwright test"
+  },
+  "dependencies": {
+    "@astrojs/cloudflare": "^12.5.0",
+    "@astrojs/react": "^4.3.0",
+    "@controlboard/core": "workspace:*",
+    "@measured/puck": "^0.20.2",
+    "astro": "^5.7.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "wrangler": "^4.40.0"
+  }
+}

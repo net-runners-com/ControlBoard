@@ -36,7 +36,7 @@ export function normalizeConfig(raw) {
   }));
 
   return {
-    site: { name: "", url: "", logo: "", manualUrl: "", ...raw.site },
+    site: { name: "", url: "", logo: "", manualUrl: "", canvasCss: "", ...raw.site },
     blocks: raw.blocks,
     pages,
     settings,

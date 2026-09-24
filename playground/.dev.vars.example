@@ -1,0 +1,4 @@
+# staging の確認をするときだけ .dev.vars にコピーして使う
+# SITE_ENV=staging
+# BASIC_USER=dev
+# BASIC_PASS=dev-pass

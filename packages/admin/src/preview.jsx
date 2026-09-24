@@ -2,21 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 
 /* ---------------- change tracking (before/after diff) ---------------- */
 const JP_LABELS = {
-  contact: "基本情報", tel: "電話番号（表示）", telLink: "電話リンク", address: "住所", access: "アクセス", email: "メールアドレス",
-  sns: "SNS", facebook: "Facebook URL", line: "LINE URL", links: "リンク", hidden: "非表示にする",
-  intro: "紹介文", heading: "見出し", reasons: "選ばれる理由", t: "小見出し", p: "説明",
-  hero: "ヒーロー", catch: "キャッチコピー", sub: "肩書き（H1）", image: "メイン画像（PC）", imageSp: "メイン画像（スマホ）",
-  greeting: "ごあいさつ", paragraphs: "本文", sign: "署名", photo: "写真", caption: "キャプション",
-  staff: "スタッフ", name: "氏名", kana: "ふりがな", role: "肩書き", bio: "プロフィール", licenses: "資格",
-  services: "サービス", title: "タイトル", lead: "説明", items: "項目", icon: "アイコン", id: "ID",
-  news: "お知らせ", date: "日付", body: "本文", bodyHtml: "本文",
-  reviews: "お客様の声", rating: "総合評価", count: "クチコミ件数", jobs: "実績件数", source: "出典", url: "URL", text: "本文", meta: "属性",
-  faq: "よくある質問", q: "質問", a: "回答",
-  company: "会社概要", corps: "事業体", biz: "業務",
-  privacy: "プライバシーポリシー", sections: "条項", h: "見出し", b: "本文", list: "箇条書き",
-  recruit: "採用情報", memo: "募集メモ", closing: "締め文", closingHtml: "締め文",
+  news: "お知らせ", date: "日付", title: "タイトル", body: "本文", bodyHtml: "本文",
+  jobs: "募集要項", recruit: "採用情報", items: "項目", text: "本文", url: "URL", image: "画像", imageSp: "画像（スマホ）",
+  heading: "見出し", lead: "説明", name: "名前", hidden: "非表示にする", id: "ID",
   root: "ページ設定", content: "ブロック", props: "", type: "ブロック種別",
-  pageOrder: "ページの並び順", pageTitles: "ページ名", sidebar: "サイドバー", home3: "トップの3つの案内",
+  pageOrder: "ページの並び順", pageTitles: "ページ名", customPages: "ページ", hiddenPages: "ページ",
 };
 export function registerLabels(map) { Object.assign(JP_LABELS, map); }
 function pathLabel(path) {

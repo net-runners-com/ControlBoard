@@ -1,0 +1,8 @@
+{
+  "name": "controlboard",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": { "controlboard": "./src/index.js" },
+  "dependencies": { "@controlboard/core": "workspace:*" },
+  "devDependencies": { "vitest": "^3.2.4" }
+}

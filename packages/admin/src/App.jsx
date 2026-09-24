@@ -12,7 +12,11 @@ import Users from "./Users.jsx";
 import Links from "./Links.jsx";
 import RagAssistant from "./RagAssistant.jsx";
 import { SECTIONS } from "./sections.js";
-import { ICONS, ICON_KEYS, ICON_ALIASES, iconPaths } from "../../src/lib/icons.js";
+import config from "virtual:controlboard/config";
+import { settingsTopKeys, labelsFromSettings } from "@controlboard/core/config";
+import SettingsForm from "./SettingsForm.jsx";
+import { visibleSections } from "./visible.js";
+import { registerLabels } from "./preview.jsx";
 import "./admin.css";
 
 async function api(path, opts = {}) {
@@ -72,216 +76,6 @@ const NAV_ICONS = {
 /* ---------------- section editors ---------------- */
 function set(obj, key, val) { return Object.assign({}, obj, { [key]: val }); }
 
-function SecBasic({ c, patch }) {
-  const ct = c.contact || {};
-  const on = (k) => (v) => patch("contact", set(ct, k, v));
-  return (
-    <Card title="基本情報（電話・住所・メール）">
-      <div className="grid2">
-        <TextField label="電話番号（表示）" value={ct.tel} onChange={on("tel")} />
-        <TextField label="電話リンク（数字のみ）" value={ct.telLink} onChange={on("telLink")} hint="例: 0362793375" />
-      </div>
-      <TextField label="住所" value={ct.address} onChange={on("address")} />
-      <TextField label="アクセス（最寄り駅からの道のり）" value={ct.access} onChange={on("access")} />
-      <TextField label="メールアドレス" type="email" value={ct.email} onChange={on("email")} />
-      <TextField label="地図のURL（空欄なら住所から自動）" value={ct.mapUrl} onChange={on("mapUrl")}
-        hint="Googleマップで場所を開き、共有 → リンクをコピー、で貼り付けてください" />
-    </Card>
-  );
-}
-function ColorRow({ label, value, onChange, fallback }) {
-  const id = useId();
-  return (
-    <div className="fld">
-      <label htmlFor={id}>{label}</label>
-      <div className="clr">
-        <input id={id} name={id} type="color" value={value || fallback} onChange={(e) => onChange(e.target.value)} aria-label={label} />
-        <input name={id + "-hex"} type="text" value={value || ""} aria-label={label + "（色の値）"}
-          placeholder={"未設定（" + fallback + "）"} onChange={(e) => onChange(e.target.value)} />
-        {value ? <button type="button" className="clr-x" onClick={() => onChange("")} title="既定に戻す">×</button> : null}
-      </div>
-    </div>
-  );
-}
-const THEME_FIELDS = [
-  { key: "brand", label: "テーマカラー", fallback: "#232a5c" },
-  { key: "brandInk", label: "テーマカラー（濃いほう）", fallback: "#161a3c" },
-  { key: "accent", label: "アクセントカラー", fallback: "#cbb26a" },
-  { key: "text", label: "本文の文字色", fallback: "#1c2033" },
-  { key: "pageBg", label: "ページ背景色", fallback: "#ffffff" },
-];
-function SecTheme({ c, patch }) {
-  const t = c.theme || {};
-  const on = (k) => (v) => patch("theme", set(t, k, v));
-  return (
-    <Card title="サイトの配色">
-      <p className="hint" style={{ marginBottom: 14 }}>ヘッダー・ボタン・見出しなどサイト全体の色が変わります。空欄にすると既定の色に戻ります。</p>
-      <div className="grid2">
-        {THEME_FIELDS.map((f) => (
-          <ColorRow key={f.key} label={f.label} value={t[f.key]} onChange={on(f.key)} fallback={f.fallback} />
-        ))}
-      </div>
-    </Card>
-  );
-}
-/* The side column shows on every page, so it belongs in the shared settings. */
-function IconPicker({ value, onChange }) {
-  const cur = ICON_ALIASES[value] || value || "people";
-  return (
-    <div className="ic-pack">
-      {ICON_KEYS.map((k) => (
-        <button type="button" key={k} className={"ic-opt" + (cur === k ? " on" : "")}
-          title={ICONS[k].label} aria-label={ICONS[k].label} onClick={() => onChange(k)}>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-            {iconPaths(k).map((d, i) => <path key={i} d={d} />)}
-          </svg>
-        </button>
-      ))}
-    </div>
-  );
-}
-const DEFAULT_SIDE_LINKS = [
-  { text: "会計・経営・税務サービス", url: "/service#s1" },
-  { text: "事業承継・相続贈与", url: "/service#s2" },
-  { text: "その他経営なんでも", url: "/service#s3" },
-  { text: "社会保険労務士業務", url: "/service#s4" },
-];
-const DEFAULT_SIDE_CARDS = [
-  { icon: "about", title: "コンパス会計社について", note: "代表・事務所のご紹介", url: "/about" },
-  { icon: "recruit", title: "採用情報", note: "一緒に働く仲間を募集", url: "/recruit" },
-  { icon: "contact", title: "お問合せ", note: "お問合せはこちら", url: "/contact" },
-];
-function Rows({ items, onChange, blank, label, render }) {
-  const move = (i, d) => {
-    const j = i + d;
-    if (j < 0 || j >= items.length) return;
-    const a = items.slice(); const t = a[i]; a[i] = a[j]; a[j] = t; onChange(a);
-  };
-  return (
-    <React.Fragment>
-      {items.map((it, i) => (
-        <div className="blk" key={i}>
-          <div className="blk-top">
-            <b>{label} {i + 1}</b>
-            <button type="button" className="blk-move" title="上へ" onClick={() => move(i, -1)}>↑</button>
-            <button type="button" className="blk-move" title="下へ" onClick={() => move(i, 1)}>↓</button>
-            <button type="button" className="blk-del" onClick={() => onChange(items.filter((_, j) => j !== i))}>削除</button>
-          </div>
-          {render(it, (v) => onChange(items.map((x, j) => (j === i ? v : x))))}
-        </div>
-      ))}
-      <button type="button" className="btn-add" onClick={() => onChange(items.concat([Object.assign({}, blank)]))}>＋ {label}を追加</button>
-    </React.Fragment>
-  );
-}
-function SecSidebar({ c, patch }) {
-  const s = c.sidebar || {};
-  const on = (k) => (v) => patch("sidebar", set(s, k, v));
-  const links = Array.isArray(s.links) && s.links.length ? s.links : DEFAULT_SIDE_LINKS;
-  const cards = Array.isArray(s.cards) && s.cards.length ? s.cards : DEFAULT_SIDE_CARDS;
-  return (
-    <Card title="サイドバー（全ページ共通）">
-      <p className="hint" style={{ marginBottom: 14 }}>各ページの左側に出る欄です。並び順は↑↓で入れ替えられます。</p>
-      <div className="grid2">
-        <TextField label="電話欄の見出し" value={s.telHeading} onChange={on("telHeading")} placeholder="お電話でのお問合せ" />
-        <TextField label="フォームボタンの文言" value={s.formLabel} onChange={on("formLabel")} placeholder="お問合せフォーム" />
-      </div>
-      <TextField label="リンク一覧の見出し" value={s.heading} onChange={on("heading")} placeholder="業務のご案内" />
-      <div className="fld"><label>リンク</label>
-        <Rows items={links} onChange={on("links")} label="リンク" blank={{ text: "", url: "" }}
-          render={(it, up) => (
-            <div className="grid2">
-              <TextField label="表示テキスト" value={it.text} onChange={(v) => up(set(it, "text", v))} />
-              <TextField label="リンク先" value={it.url} onChange={(v) => up(set(it, "url", v))} hint="例: /service#s1" />
-            </div>
-          )} />
-      </div>
-      <div className="fld"><label>下段のカード</label>
-        <Rows items={cards} onChange={on("cards")} label="カード" blank={{ icon: "about", title: "", note: "", url: "" }}
-          render={(it, up) => (
-            <React.Fragment>
-              <div className="grid2">
-                <TextField label="タイトル" value={it.title} onChange={(v) => up(set(it, "title", v))} />
-                <TextField label="補足" value={it.note} onChange={(v) => up(set(it, "note", v))} />
-              </div>
-              <div className="grid2">
-                <TextField label="リンク先" value={it.url} onChange={(v) => up(set(it, "url", v))} />
-                <div className="fld"><label>アイコン</label>
-                  <IconPicker value={it.icon} onChange={(v) => up(set(it, "icon", v))} />
-                </div>
-              </div>
-            </React.Fragment>
-          )} />
-      </div>
-    </Card>
-  );
-}
-
-function SecLogo({ c, patch }) {
-  const b = c.brandAssets || {};
-  const on = (k) => (v) => patch("brandAssets", set(b, k, v));
-  return (
-    <Card title="ロゴ">
-      <p className="hint" style={{ marginBottom: 14 }}>空欄のままなら、これまでのロゴが表示されます。</p>
-      <div className="grid2">
-        <ImagePicker label="ヘッダーのロゴ" value={b.logo} onChange={on("logo")} hint="横長の画像（推奨 490×86 程度）" />
-        <ImagePicker label="フッターのロゴ" value={b.logoFooter} onChange={on("logoFooter")} hint="推奨 466×106 程度" />
-      </div>
-    </Card>
-  );
-}
-
-/* The old shape kept one URL per network; the list replaces it and still reads
-   the two legacy keys so nothing disappears before the first save. */
-const legacySns = (s) => {
-  const out = [];
-  if (s.facebook) out.push({ label: "Facebook", url: s.facebook, icon: "/assets/icon_fb_c.webp" });
-  if (s.line) out.push({ label: "LINE", url: s.line, icon: "/assets/icon_line.webp" });
-  return out;
-};
-function SecSns({ c, patch }) {
-  const s = c.sns || {};
-  const links = Array.isArray(s.links) ? s.links : legacySns(s);
-  const write = (next) => patch("sns", Object.assign({}, s, { links: next, facebook: "", line: "" }));
-  const upd = (i, v) => write(links.map((x, j) => (j === i ? v : x)));
-  const move = (i, d) => {
-    const j = i + d;
-    if (j < 0 || j >= links.length) return;
-    const a = links.slice(); const t = a[i]; a[i] = a[j]; a[j] = t; write(a);
-  };
-  return (
-    <Card title="SNS・外部リンク">
-      <p className="hint" style={{ marginBottom: 14 }}>
-        ヘッダー右上に並ぶボタンです。上から順に表示されます。
-        「サイトに表示する」を外すと、設定を残したままサイトから消せます。
-      </p>
-      {links.map((l, i) => (
-        <div className={"blk" + (l.hidden ? " is-off" : "")} key={i}>
-          <div className="blk-top">
-            <b>{(l.label || "リンク " + (i + 1)) + (l.hidden ? "（非表示）" : "")}</b>
-            <button type="button" className="blk-move" title="上へ" onClick={() => move(i, -1)}>↑</button>
-            <button type="button" className="blk-move" title="下へ" onClick={() => move(i, 1)}>↓</button>
-            <button type="button" className="blk-del" onClick={() => write(links.filter((_, j) => j !== i))}>削除</button>
-          </div>
-          <div className="grid2">
-            <TextField label="名前" value={l.label} onChange={(v) => upd(i, set(l, "label", v))} hint="画像がないときはこの文字が出ます" />
-            <TextField label="リンク先URL" type="url" value={l.url} onChange={(v) => upd(i, set(l, "url", v))} />
-          </div>
-          <ImagePicker label="アイコン画像" value={l.icon} onChange={(v) => upd(i, set(l, "icon", v))} hint="正方形の画像（推奨 34×34 以上）" />
-          <label className="us-chk">
-            <input
-              type="checkbox" name={"sns-show-" + i} checked={!l.hidden}
-              onChange={(e) => upd(i, set(l, "hidden", !e.target.checked))}
-            />
-            <span>サイトに表示する（外すとサイトに出ません。設定は残ります）</span>
-          </label>
-        </div>
-      ))}
-      <button type="button" className="btn-add" onClick={() => write(links.concat([{ label: "", url: "", icon: "" }]))}>＋ リンクを追加</button>
-    </Card>
-  );
-}
 function SecPassword({ toast }) {
   const [cur, setCur] = useState(""); const [n1, setN1] = useState(""); const [n2, setN2] = useState("");
   const [busy, setBusy] = useState(false);
@@ -461,7 +255,7 @@ function SecDashboard({ c, inquiries, perms = [], onOpenInquiries }) {
 
   return (
     <React.Fragment>
-      {perms.includes("inquiries") ? (
+      {perms.includes("inquiries") && config.modules.inquiries ? (
         <div className="card">
           <div className="card-h">
             {"お問い合わせ" + (todayCount ? `（今日 ${todayCount}件）` : "")}
@@ -498,7 +292,7 @@ function SecDashboard({ c, inquiries, perms = [], onOpenInquiries }) {
           )}
         </div>
       ) : null}
-      {perms.includes("stats") ? <Stats /> : null}
+      {perms.includes("stats") && config.modules.stats ? <Stats /> : null}
     </React.Fragment>
   );
 }
@@ -517,7 +311,7 @@ function Login({ onDone }) {
   return (
     <div className="lg-wrap">
       <form className="lg-card" onSubmit={submit}>
-        <div className="lg-brand"><img className="lg-logo" src="/assets/logo.png" alt="コンパス会計社" /><small>ADMIN CONSOLE</small></div>
+        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
         <div className="lg-h">管理画面ログイン</div>
         {err ? <div className="lg-err">{err}</div> : null}
         <div className="lg-field"><label htmlFor="lg-user">ユーザー名</label>
@@ -544,7 +338,7 @@ function FirstChange({ onDone }) {
   return (
     <div className="lg-wrap">
       <form className="lg-card" onSubmit={submit}>
-        <div className="lg-brand"><img className="lg-logo" src="/assets/logo.png" alt="コンパス会計社" /><small>ADMIN CONSOLE</small></div>
+        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
         <div className="lg-h">初回パスワード変更</div>
         <div className="lg-note" style={{ marginTop: 0, marginBottom: 14 }}>安全のため、仮パスワードを変更してください。</div>
         {err ? <div className="lg-err">{err}</div> : null}
@@ -564,7 +358,7 @@ function FirstChange({ onDone }) {
 /* ---------------- main app ---------------- */
 const ROLE_JP = { owner: "オーナー", admin: "管理者", editor: "編集者" };
 const SECTION_KEYS = {
-  settings: ["contact", "sns", "theme", "brandAssets", "sidebar"],
+  settings: settingsTopKeys(config.settings),
   news: ["news"],
   jobs: ["jobs", "recruit"],
 };
@@ -572,6 +366,8 @@ const SECTION_KEYS = {
    available. The server enforces the same rules — this only hides what the
    signed-in user cannot use. Defined in sections.js so RagAssistant.jsx can
    reuse the same labels/permissions for its "該当ページを開く" links. */
+
+registerLabels(labelsFromSettings(config.settings));
 
 function App() {
   const [phase, setPhase] = useState("loading");
@@ -621,8 +417,10 @@ function App() {
 
   async function loadContent() {
     const [{ data }, inq] = await Promise.all([api("/api/content"), api("/api/inquiries")]);
-    setContent(data || {});
-    setPristine(JSON.parse(JSON.stringify(data || {})));
+    /* まだ保存していない項目は、サイト設定の既定値を出す（公開ページと同じ見え方）。 */
+    const merged = Object.assign({}, config.defaults.content, data || {});
+    setContent(merged);
+    setPristine(JSON.parse(JSON.stringify(merged)));
     if (inq.ok) setInquiries((inq.data && inq.data.items) || []);
   }
   async function loadInquiries() { const { ok, data } = await api("/api/inquiries"); if (ok) setInquiries((data && data.items) || []); }
@@ -680,7 +478,7 @@ function App() {
 
   const c = content || {};
   const perms = (me && me.perms) || [];
-  const sections = SECTIONS.filter((s) => !s.need || perms.includes(s.need));
+  const sections = visibleSections(SECTIONS, config.modules, perms);
   const cur = sections.find((s) => s.key === section) || sections[0];
   const siteBlocked = narrow;
   const editors = {
@@ -698,7 +496,7 @@ function App() {
     ) : (
       <SiteEditor
         toast={showToast} content={c} onPageOrder={savePageOrder} onPageSaved={loadContent}
-        settingsPanel={<React.Fragment><SecTheme c={c} patch={patch} /><SecLogo c={c} patch={patch} /><SecBasic c={c} patch={patch} /><SecSns c={c} patch={patch} /><SecSidebar c={c} patch={patch} /></React.Fragment>}
+        settingsPanel={<SettingsForm groups={config.settings} c={c} patch={patch} />}
         onSaveKeys={doSave} isDirty={isDirty} discard={discard} saving={saving}
       />
     ),
@@ -712,7 +510,7 @@ function App() {
     <div className="acp">
       <div className={"acp-ov" + (navOpen ? " on" : "")} onClick={() => setNavOpen(false)} />
       <aside className={"acp-side" + (navOpen ? " open" : "")}>
-        <div className="acp-brand"><img className="acp-brand-logo" src="/assets/logo.png" alt="コンパス会計社" /><small>ADMIN CONSOLE</small></div>
+        <div className="acp-brand">{config.site.logo ? <img className="acp-brand-logo" src={config.site.logo} alt={config.site.name} /> : <b className="acp-brand-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
         <nav className="acp-nav">
           {sections.map((s, i) => (
             <React.Fragment key={s.key}>
@@ -730,11 +528,13 @@ function App() {
             </React.Fragment>
           ))}
         </nav>
-        <a className="acp-manual" href="/manual/" target="_blank" rel="noopener">
+        {config.site.manualUrl ? (
+        <a className="acp-manual" href={config.site.manualUrl} target="_blank" rel="noopener">
           <NavIcon>{NAV_ICONS.manual}</NavIcon>
           <span className="acp-navlb">使い方マニュアル</span>
           <span className="acp-manual-arw" aria-hidden="true">↗</span>
         </a>
+        ) : null}
         <div className="acp-user">
           <span className="av">{String((me && (me.name || me.user)) || "").slice(0, 1).toUpperCase()}</span>
           <div><b title={me ? (me.name || me.user) : ""}>{me ? (me.name || me.user) : ""}</b><span>{(me && ROLE_JP[me.role]) || ""}</span></div>
@@ -756,7 +556,7 @@ function App() {
       </div>
 
       {toast ? <div className={"toast show" + (toast.err ? " err" : "")}>{toast.msg}</div> : null}
-      <RagAssistant perms={perms} onNavigate={setSection} />
+      {config.modules.rag ? <RagAssistant perms={perms} onNavigate={setSection} /> : null}
     </div>
   );
 }

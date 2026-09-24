@@ -1,0 +1,15 @@
+---
+import { Render } from "@measured/puck";
+import config from "virtual:controlboard/config";
+import { getContent } from "@controlboard/core/runtime/content";
+import { getPage, PAGE_IDS, PAGES, idOfSlug, findCustom, isPageHidden } from "@controlboard/core/runtime/pages";
+import Base from "../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const slug = Astro.params.slug;
+const fixedId = PAGE_IDS.find((id) => id !== "home" && PAGES[id].url === "/" + slug);
+const id = fixedId || (findCustom(content, slug) ? idOfSlug(slug) : null);
+if (!id || isPageHidden(id, content)) return new Response("Not found", { status: 404 });
+const data = await getPage(env, id, Astro.url, content);
+---
+<Base pageId={id} content={content}><Render config={config.blocks.sub} data={data} /></Base>

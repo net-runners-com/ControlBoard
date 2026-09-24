@@ -1,0 +1,9 @@
+{
+  // ローカル専用。ID は wrangler のローカル実行でだけ使うダミー。
+  "name": "controlboard-playground",
+  "pages_build_output_dir": "dist",
+  "compatibility_date": "2025-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [{ "binding": "CMS", "id": "local-cms" }],
+  "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "local-media" }]
+}

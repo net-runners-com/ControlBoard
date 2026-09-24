@@ -910,3 +910,10 @@ input,textarea,select{font-family:inherit}
   .rag-panel{right:16px;left:16px;width:auto;bottom:82px}
   .rag-fab{right:16px;bottom:16px}
 }
+
+/* 共通設定フォーム（SettingsForm.jsx） */
+.fld input[type=color]{width:56px;height:34px;padding:2px;border:1px solid var(--line,#ddd);border-radius:8px;background:#fff}
+.sf-list{display:flex;flex-direction:column;gap:12px}
+.sf-item{border:1px solid var(--line,#e5e7eb);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.sf-item>.nw-edit{align-self:flex-end}
+.sf-group{border-left:3px solid var(--line,#e5e7eb);padding-left:12px}

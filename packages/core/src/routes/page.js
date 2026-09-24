@@ -40,8 +40,8 @@ export async function PUT({ request, url, locals }) {
   await env.CMS.put("page:" + id, JSON.stringify(doc));
   /* ページ名はメニューと管理画面のページ一覧にも出る。ページの文書を全部
      読みに行くわけにはいかないので、保存のたびに共通の内容へ控えておく。
-     fixed のページ（記事の共通レイアウトなど）は対象外。 */
-  if (id !== "home" && !(PAGES[id] && PAGES[id].fixed)) {
+     template のページ（記事の共通レイアウト）は対象外。 */
+  if (id !== "home" && !(PAGES[id] && PAGES[id].template)) {
     const jp = String(((doc.root || {}).props || {}).jp || "").trim();
     const titles = Object.assign({}, cur.pageTitles);
     if (jp && jp !== def.label) titles[id] = jp; else delete titles[id];

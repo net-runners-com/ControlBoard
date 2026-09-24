@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { PAGES } from "../../src/lib/page.js";
-import { newsSlug, legacyNewsSlug } from "../../src/lib/news.js";
+import { PAGES } from "@controlboard/core/runtime/pages";
+import { newsSlug, legacyNewsSlug } from "@controlboard/core/runtime/news";
 import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,

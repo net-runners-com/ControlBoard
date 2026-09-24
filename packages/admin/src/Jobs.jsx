@@ -1,5 +1,5 @@
 import React, { useId, useState } from "react";
-import { jobComplete, isHiring } from "../../src/lib/jobs.js";
+import { jobComplete, isHiring } from "@controlboard/core/runtime/jobs";
 
 /* 募集要項管理: お知らせと同じ一覧→編集の作り。項目は名前も内容も自由に
    決められる（雇用形態・給与など、募集ごとに要るものが違うため）。 */

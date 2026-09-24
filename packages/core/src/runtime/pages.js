@@ -37,8 +37,8 @@ export const hiddenPageIds = (content) => {
   return Array.isArray(list) ? list.filter((id) => PAGES[id]) : [];
 };
 export const isPageHidden = (id, content) => hiddenPageIds(content).includes(id);
-/* トップと fixed の付いたページ（記事の共通レイアウトなど）は消せない。 */
-export const DELETABLE_PAGE_IDS = PAGE_IDS.filter((id) => id !== "home" && !PAGES[id].fixed);
+/* トップと、fixed（消させない）/ template（記事の共通レイアウトなど、ページではなく枠）は消せない。 */
+export const DELETABLE_PAGE_IDS = PAGE_IDS.filter((id) => id !== "home" && !PAGES[id].fixed && !PAGES[id].template);
 export const findCustom = (content, slug) =>
   customPages(content).find((p) => p.slug === slug) || null;
 

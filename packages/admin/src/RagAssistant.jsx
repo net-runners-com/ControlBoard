@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
+import config from "virtual:controlboard/config";
 import { SECTIONS } from "./sections.js";
+import { visibleSections } from "./visible.js";
 
 /* 管理画面の使い方アシスタント。全ページ共通の浮きボタン→チャットパネル。
    /api/admin/rag-ask が返す SSE(sources → 本文の断片 → [DONE])をその場で
@@ -25,7 +27,7 @@ function linksFor(sources, perms) {
   for (const source of sources || []) {
     const sectionKey = CATEGORY_SECTION[source.category];
     if (!sectionKey || seen.has(sectionKey)) continue;
-    const section = SECTIONS.find((s) => s.key === sectionKey);
+    const section = visibleSections(SECTIONS, config.modules, perms || []).find((s) => s.key === sectionKey);
     if (!section || (section.need && !perms.includes(section.need))) continue;
     seen.add(sectionKey);
     links.push(section);
