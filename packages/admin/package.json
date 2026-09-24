@@ -1,0 +1,21 @@
+{
+  "name": "@controlboard/admin",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@controlboard/core": "workspace:*",
+    "@measured/puck": "^0.20.2",
+    "@tiptap/extension-image": "^3.29.0",
+    "@tiptap/extension-link": "^3.29.0",
+    "@tiptap/extension-text-align": "^3.29.0",
+    "@tiptap/extension-text-style": "^3.29.0",
+    "@tiptap/extension-underline": "^3.29.0",
+    "@tiptap/pm": "^3.29.0",
+    "@tiptap/react": "^3.29.0",
+    "@tiptap/starter-kit": "^3.29.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "recharts": "^3.10.1"
+  }
+}

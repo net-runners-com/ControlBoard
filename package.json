@@ -1,0 +1,12 @@
+{
+  "name": "controlboard",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "e2e": "pnpm --filter playground e2e"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}

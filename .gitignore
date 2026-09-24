@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.wrangler/
+.astro/
+playground/public/admin/
+playground/public/rag-admin/
+test-results/
+playwright-report/
+.cfauth/
+.dev.vars

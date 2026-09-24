@@ -1,0 +1,30 @@
+{
+  "name": "@controlboard/core",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js",
+    "./config": "./src/config.js",
+    "./puck": "./src/puck.jsx",
+    "./seo": "./src/seo.js",
+    "./runtime/*": "./src/runtime/*.js"
+  },
+  "dependencies": {
+    "@controlboard/admin": "workspace:*",
+    "@vitejs/plugin-react": "^5.2.0",
+    "vite": "^6.4.3"
+  },
+  "peerDependencies": {
+    "@astrojs/cloudflare": "^12.5.0",
+    "@measured/puck": "^0.20.2",
+    "astro": "^5.7.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@measured/puck": "^0.20.2",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "vitest": "^3.2.4"
+  }
+}
