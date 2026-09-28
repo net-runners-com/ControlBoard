@@ -25,7 +25,7 @@ async function ask(q) {
   return a;
 }
 
-const USAGE = "使い方: controlboard init | create-owner --user <名前> [--password <pw>] [--remote] | setup --name <名前> [--stg] [--dry-run] | deploy --name <名前> [--stg] [--dry-run] | rag-index";
+const USAGE = "使い方: controlboard init | create-owner --user <名前> [--password <pw>] [--remote] | setup --name <名前> [--stg] [--dry-run] | deploy --name <名前> [--stg] [--dry-run] | rag-index | mcp --url <サイトのURL> [--token <t>] [--basic <user:pass>]";
 
 if (cmd === "init") {
   const w = await initSite(process.cwd());
@@ -48,6 +48,19 @@ if (cmd === "init") {
   if (!flag("dry-run") && !flag("stg") && (await ask("本番にデプロイします。よろしいですか？ (yes/no): ")) !== "yes") process.exit(1);
   run(["astro", "build"], flag("dry-run"));
   run(argv, flag("dry-run"));
+} else if (cmd === "mcp") {
+  const { startMcp } = await import("./mcp/server.js");
+  const env = process.env;
+  try {
+    await startMcp({
+      url: opt("url") || env.CONTROLBOARD_URL,
+      token: opt("token") || env.CONTROLBOARD_TOKEN,
+      basic: opt("basic") || env.CONTROLBOARD_BASIC,
+    });
+  } catch (e) {
+    console.error(e.message);
+    process.exit(1);
+  }
 } else if (cmd === "rag-index") {
   await import("./rag-index.mjs");
 } else {

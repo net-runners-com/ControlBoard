@@ -22,7 +22,8 @@ export async function POST({ request, locals }) {
 
   const ext = (type.split("/")[1] || "bin").replace("jpeg", "jpg").replace("svg+xml", "svg").replace(/[^a-z0-9]/g, "");
   const key = keyFor(file.name, ext, randHex(4), mediaPrefix(env));
-  await env.MEDIA.put(key, file.stream(), { httpMetadata: { contentType: type } });
+  // 長さの分からないストリームは R2 が受け取らない（ローカルの wrangler で 500 になる）。5MB までなので読み切って渡す。
+  await env.MEDIA.put(key, await file.arrayBuffer(), { httpMetadata: { contentType: type } });
   // The name people see is kept apart from the key, so renaming an image later
   // can never break a page that already points at it.
   const name = String(file.name || "").replace(/\.[^.]*$/, "") || "画像";

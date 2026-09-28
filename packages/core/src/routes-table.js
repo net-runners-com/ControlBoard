@@ -8,6 +8,8 @@ export const ROUTES = [
   { pattern: "/api/me", file: f("me.js") },
   { pattern: "/api/password", file: f("password.js") },
   { pattern: "/api/users", file: f("users.js") },
+  { pattern: "/api/tokens", file: f("tokens.js") },
+  { pattern: "/api/schema", file: f("schema.js") },
   { pattern: "/api/content", file: f("content.js") },
   { pattern: "/api/page", file: f("page.js") },
   { pattern: "/api/pages", file: f("pages.js") },

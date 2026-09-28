@@ -60,7 +60,14 @@ export function sessionCookie(token, maxAge = SESSION_TTL) {
   ].join("; ");
 }
 
+/* ログインの sid か、API トークンのどちらか。トークンのときは sid が null。 */
 export async function getSession(env, request) {
+  const { TOKEN_HEADER, verifyToken } = await import("./tokens.js");
+  const raw = request.headers.get(TOKEN_HEADER);
+  if (raw) {
+    const u = await verifyToken(env, raw);
+    return u ? { sid: null, user: u.user, tokenId: u.tokenId } : null;
+  }
   const sid = parseCookies(request).sid;
   if (!sid) return null;
   const s = await env.CMS.get("session:" + sid, "json");

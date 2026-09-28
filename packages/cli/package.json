@@ -2,7 +2,14 @@
   "name": "controlboard",
   "version": "0.1.0",
   "type": "module",
-  "bin": { "controlboard": "./src/index.js" },
-  "dependencies": { "@controlboard/core": "workspace:*" },
-  "devDependencies": { "vitest": "^3.2.4" }
+  "bin": {
+    "controlboard": "./src/index.js"
+  },
+  "dependencies": {
+    "@controlboard/core": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.30.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
 }
