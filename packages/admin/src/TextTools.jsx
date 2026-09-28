@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { BRAND } from "./theme.js";
 
 /* Colour, size and alignment belong next to the text you are changing, so both
    toolbars (the field editor and the one that floats over the canvas) share
@@ -6,8 +7,8 @@ import React, { useState } from "react";
 
 const SWATCHES = [
   { v: "", label: "既定" },
-  { v: "#232a5c", label: "テーマ" },
-  { v: "#cbb26a", label: "アクセント" },
+  { v: BRAND, label: "テーマ" },
+  { v: "#d97706", label: "アクセント" },
   { v: "#1c2033", label: "黒" },
   { v: "#5a6072", label: "グレー" },
   { v: "#c0392b", label: "赤" },
@@ -46,7 +47,7 @@ function ColorMenu({ editor, dark }) {
               style={s.v ? { background: s.v } : undefined}>{s.v ? "" : "×"}</button>
           ))}
           <label className="tt-any" title="自由に選ぶ">
-            <input type="color" value={cur || "#232a5c"} onChange={(e) => set(e.target.value)} />
+            <input type="color" value={cur || BRAND} onChange={(e) => set(e.target.value)} />
             他の色
           </label>
         </span>

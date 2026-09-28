@@ -16,6 +16,13 @@ export const richField = (label) => ({
     : <textarea className="rt-plain" rows={6} value={props.value || ""} onChange={(e) => props.onChange(e.target.value)} />),
 });
 
+/* リッチテキストの値を描く。公開ページでは HTML の文字列、管理画面の編集枠では
+   その場で書き換える部品（React の要素）が来るので、どちらでも描けるようにする。 */
+export function Rich({ html, className, as: Tag = "div" }) {
+  if (React.isValidElement(html)) return <Tag className={className}>{html}</Tag>;
+  return <Tag className={className} dangerouslySetInnerHTML={{ __html: html || "" }} />;
+}
+
 export const imageField = (label, hint) => ({
   type: "custom",
   label,

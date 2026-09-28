@@ -1,5 +1,5 @@
 import React from "react";
-import { richField, imageField } from "@controlboard/core/puck";
+import { richField, imageField, Rich } from "@controlboard/core/puck";
 
 const Hero = {
   label: "ヒーロー",
@@ -17,7 +17,7 @@ const Text = {
   label: "文章",
   fields: { html: richField("本文") },
   defaultProps: { html: "<p>本文</p>" },
-  render: ({ html }) => <div className="pg-text" dangerouslySetInnerHTML={{ __html: html }} />,
+  render: ({ html }) => <Rich className="pg-text" html={html} />,
 };
 
 const components = { Hero, Text };

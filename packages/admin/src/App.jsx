@@ -9,6 +9,7 @@ import Jobs from "./Jobs.jsx";
 import History from "./History.jsx";
 import ImagePicker from "./ImagePicker.jsx";
 import Users from "./Users.jsx";
+import Tokens from "./Tokens.jsx";
 import Links from "./Links.jsx";
 import RagAssistant from "./RagAssistant.jsx";
 import { SECTIONS } from "./sections.js";
@@ -18,6 +19,7 @@ import SettingsForm from "./SettingsForm.jsx";
 import { visibleSections } from "./visible.js";
 import { registerLabels } from "./preview.jsx";
 import "./admin.css";
+import { BRAND } from "./theme.js";
 
 async function api(path, opts = {}) {
   const r = await fetch(path, { credentials: "same-origin", ...opts });
@@ -64,6 +66,7 @@ const NAV_ICONS = {
   privacy: <React.Fragment><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /></React.Fragment>,
   password: <React.Fragment><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></React.Fragment>,
   inquiries: <React.Fragment><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M22 6l-10 7L2 6" /></React.Fragment>,
+  tokens: <React.Fragment><circle cx="7.5" cy="15.5" r="4.5" /><path d="M10.7 12.3L21 2M16 7l3 3M18.5 4.5l2 2" /></React.Fragment>,
   users: <React.Fragment><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 11h-6" /></React.Fragment>,
   links: <React.Fragment><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7" /><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7" /></React.Fragment>,
   history: <React.Fragment><path d="M3 12a9 9 0 1 0 3-6.7L3 8" /><path d="M3 3v5h5" /><path d="M12 7.5V12l3 2" /></React.Fragment>,
@@ -227,8 +230,8 @@ function InquiryChart({ items }) {
             <CartesianGrid stroke="#e4e5ee" vertical={false} />
             <XAxis dataKey="d" tick={{ fontSize: 11, fill: "#5a6072" }} tickLine={false} axisLine={{ stroke: "#e4e5ee" }} minTickGap={18} />
             <YAxis tick={{ fontSize: 11, fill: "#5a6072" }} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
-            <Tooltip cursor={{ fill: "rgba(35,42,92,.06)" }} content={<ChartTooltip />} />
-            <Bar dataKey="n" name="お問い合わせ" fill="#232a5c" radius={[3, 3, 0, 0]} maxBarSize={26} isAnimationActive={false} />
+            <Tooltip cursor={{ fill: "rgba(100,116,139,.08)" }} content={<ChartTooltip />} />
+            <Bar dataKey="n" name="お問い合わせ" fill={BRAND} radius={[3, 3, 0, 0]} maxBarSize={26} isAnimationActive={false} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -311,7 +314,7 @@ function Login({ onDone }) {
   return (
     <div className="lg-wrap">
       <form className="lg-card" onSubmit={submit}>
-        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
+        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>管理画面</small></div>
         <div className="lg-h">管理画面ログイン</div>
         {err ? <div className="lg-err">{err}</div> : null}
         <div className="lg-field"><label htmlFor="lg-user">ユーザー名</label>
@@ -338,7 +341,7 @@ function FirstChange({ onDone }) {
   return (
     <div className="lg-wrap">
       <form className="lg-card" onSubmit={submit}>
-        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
+        <div className="lg-brand">{config.site.logo ? <img className="lg-logo" src={config.site.logo} alt={config.site.name} /> : <b className="lg-name">{config.site.name || "管理画面"}</b>}<small>管理画面</small></div>
         <div className="lg-h">初回パスワード変更</div>
         <div className="lg-note" style={{ marginTop: 0, marginBottom: 14 }}>安全のため、仮パスワードを変更してください。</div>
         {err ? <div className="lg-err">{err}</div> : null}
@@ -503,6 +506,7 @@ function App() {
     links: <Links toast={showToast} />,
     history: <History toast={showToast} onRestored={loadContent} />,
     users: <Users toast={showToast} />,
+    tokens: <Tokens toast={showToast} />,
     password: <SecPassword toast={showToast} />,
   };
 
@@ -510,7 +514,7 @@ function App() {
     <div className="acp">
       <div className={"acp-ov" + (navOpen ? " on" : "")} onClick={() => setNavOpen(false)} />
       <aside className={"acp-side" + (navOpen ? " open" : "")}>
-        <div className="acp-brand">{config.site.logo ? <img className="acp-brand-logo" src={config.site.logo} alt={config.site.name} /> : <b className="acp-brand-name">{config.site.name || "管理画面"}</b>}<small>ADMIN CONSOLE</small></div>
+        <div className="acp-brand">{config.site.logo ? <img className="acp-brand-logo" src={config.site.logo} alt={config.site.name} /> : <b className="acp-brand-name">{config.site.name || "管理画面"}</b>}<small>管理画面</small></div>
         <nav className="acp-nav">
           {sections.map((s, i) => (
             <React.Fragment key={s.key}>

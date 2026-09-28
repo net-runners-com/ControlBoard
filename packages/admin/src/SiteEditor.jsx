@@ -387,7 +387,8 @@ function PageEditor({ pageId, toast, picker, onDirtyChange, onSaved }) {
       if (!p.ok || !p.data || !p.data.data) { setErr("ページの読み込みに失敗しました"); return; }
       setSaved(p.data.data);
       draft.current = p.data.data;
-      setSite(c.ok ? (c.data || {}) : {});
+      /* 公開ページ（getContent）と同じく、保存前の項目はサイト設定の既定値で埋める。 */
+      setSite(Object.assign({}, config.defaults.content, c.ok ? c.data : null));
     })();
     return () => { alive = false; };
   }, [pageId]);

@@ -5,6 +5,7 @@ import {
   ResponsiveContainer, AreaChart, Area, LineChart, Line, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
 } from "recharts";
+import { BRAND, SUB, SERIES } from "./theme.js";
 
 /* Access stats from Cloudflare Web Analytics (RUM) via the GraphQL API. */
 
@@ -28,7 +29,7 @@ const TABS = [
 const EXTRA_TABS = ["countries", "browsers", "devices", "hosts", "systems"];
 
 /* Cycled per link on the click-trend chart below. */
-const LINK_COLORS = ["#232a5c", "#cbb26a", "#5b8a72", "#b5533c", "#5a6db3", "#8a5a8f", "#3f7ea6", "#a3763f"];
+const LINK_COLORS = SERIES;
 
 /* How many days of link clicks each period covers. The counters are kept by
    day, so the 24 hour view shows today. */
@@ -142,7 +143,7 @@ function useLinkRows(range) {
 /* 到達率のファネル。各段は clip-path の台形で、上辺が前段の幅・下辺が
    自段の幅。数字が主役なので、%は白抜きで台形の中に、名前と回数・前段比は
    右の列に固定して、段が細くなっても文字が潰れないようにしてある。 */
-const FUNNEL_SHADES = ["#232a5c", "#3d4785", "#5a6db3", "#8c98d9"];
+const FUNNEL_SHADES = [1, 0.75, 0.5, 0.3].map((a) => `color-mix(in srgb, ${BRAND} ${a * 100}%, #fff)`);
 function FunnelBars({ rows }) {
   if (!rows || !rows.length) return <p className="acp-lead" style={{ margin: 0 }}>この期間のデータはまだありません。</p>;
   return (
@@ -390,8 +391,8 @@ export default function Stats() {
                 <YAxis tick={{ fontSize: 11, fill: "#5a6072" }} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
                 <Tooltip content={<ChartTooltip />} />
                 <Legend iconType="circle" wrapperStyle={{ fontSize: 12, paddingTop: 6 }} />
-                <Area type="monotone" dataKey="pv" name="ページビュー" stroke="#232a5c" strokeWidth={2} fill="#232a5c" fillOpacity={0.14} dot={false} activeDot={{ r: 4 }} />
-                <Area type="monotone" dataKey="visits" name="訪問数" stroke="#cbb26a" strokeWidth={2} fill="#cbb26a" fillOpacity={0.22} dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="pv" name="ページビュー" stroke={BRAND} strokeWidth={2} fill={BRAND} fillOpacity={0.14} dot={false} activeDot={{ r: 4 }} />
+                <Area type="monotone" dataKey="visits" name="訪問数" stroke={SUB} strokeWidth={2} fill={SUB} fillOpacity={0.22} dot={false} activeDot={{ r: 4 }} />
               </AreaChart>
             </ResponsiveContainer>
           )}
@@ -415,7 +416,7 @@ export default function Stats() {
                   axisLine={{ stroke: "#e4e5ee" }} interval={0} angle={-35} textAnchor="end" height={86} />
                 <YAxis tick={{ fontSize: 11, fill: "#5a6072" }} tickLine={false} axisLine={false} allowDecimals={false} width={44} />
                 <Tooltip content={<ChartTooltip />} cursor={{ fill: "#f2f3f8" }} />
-                <Bar dataKey="v" name="クリック" fill="#232a5c" radius={[3, 3, 0, 0]} maxBarSize={44} />
+                <Bar dataKey="v" name="クリック" fill={BRAND} radius={[3, 3, 0, 0]} maxBarSize={44} />
               </BarChart>
             </ResponsiveContainer>
           </div>

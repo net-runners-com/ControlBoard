@@ -15,14 +15,14 @@ const EDITOR_CSS = `
    an editor that reads as "you cannot type here", so put text behaviour back. */
 .pk-inline{cursor:text;user-select:text;-webkit-user-select:text}
 .pk-inline{border-radius:4px;transition:box-shadow .12s}
-.pk-inline:hover{box-shadow:0 0 0 2px rgba(35,42,92,.14)}
-.pk-inline:focus-within{box-shadow:0 0 0 2px var(--brand,#232a5c)}
+.pk-inline:hover{box-shadow:0 0 0 2px rgba(100,116,139,.2)}
+.pk-inline:focus-within{box-shadow:0 0 0 2px var(--brand,#2563eb)}
 /* One hover indicator is enough: ours. Puck adds a dashed outline of its own. */
 .pk-inline-host[data-puck-overlay-portal]:hover{outline:none}
-.pk-bub{display:flex;gap:2px;background:#161a3c;border-radius:8px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.32);z-index:9999}
+.pk-bub{display:flex;gap:2px;background:#1f2937;border-radius:8px;padding:4px;box-shadow:0 8px 24px rgba(0,0,0,.32);z-index:9999}
 .pk-bub button{background:none;border:0;color:#fff;border-radius:6px;padding:5px 9px;font-size:12.5px;line-height:1.4;cursor:pointer}
 .pk-bub button:hover{background:rgba(255,255,255,.18)}
-.pk-bub button.on{background:#cbb26a;color:#1b1405}
+.pk-bub button.on{background:var(--brand,#2563eb);color:#fff}
 .pk-bub .sep{width:1px;height:18px;background:rgba(255,255,255,.28);margin:0 4px;align-self:center}
 `;
 

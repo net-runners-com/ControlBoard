@@ -10,5 +10,6 @@ export const SECTIONS = [
   { key: "links", label: "リンク管理", need: "content", module: "links" },
   { key: "history", label: "変更履歴", need: "history" },
   { key: "users", label: "ユーザー管理", need: "users" },
+  { key: "tokens", label: "AI連携" },
   { key: "password", label: "パスワード変更" },
 ];
