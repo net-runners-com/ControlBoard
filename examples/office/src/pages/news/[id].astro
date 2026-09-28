@@ -1,0 +1,16 @@
+---
+import { getContent } from "@controlboard/core/runtime/content";
+import { publishedNews, findNews } from "@controlboard/core/runtime/news";
+import Base from "../../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const n = findNews(publishedNews(content.news), Astro.params.id);
+if (!n) return new Response("Not found", { status: 404 });
+const html = n.bodyHtml != null ? n.bodyHtml : (n.body || []).map((t) => "<p>" + t + "</p>").join("");
+---
+<Base pageId="news" content={content} title={n.title} en={n.date}>
+  <section class="ex-sec"><div class="ex-wrap ex-narrow">
+    <div class="ex-rich" set:html={html} />
+    <p class="ex-more"><a href="/news">← お知らせ一覧へ</a></p>
+  </div></section>
+</Base>

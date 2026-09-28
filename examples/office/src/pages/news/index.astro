@@ -1,0 +1,21 @@
+---
+import { Render } from "@measured/puck";
+import config from "virtual:controlboard/config";
+import { getContent } from "@controlboard/core/runtime/content";
+import { getPage } from "@controlboard/core/runtime/pages";
+import { publishedNews, newsHref } from "@controlboard/core/runtime/news";
+import Base from "../../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const data = await getPage(env, "news", Astro.url, content);
+const list = publishedNews(content.news);
+---
+<Base pageId="news" content={content} title={(content.pageTitles || {}).news || "お知らせ"} en="News">
+  <Render config={config.blocks.sub} data={data} metadata={{ site: content }} />
+  <section class="ex-sec"><div class="ex-wrap ex-narrow">
+    <ul class="ex-news">
+      {list.map((n) => <li><a href={newsHref(n)}><time>{n.date}</time><span>{n.title}</span></a></li>)}
+    </ul>
+    {list.length ? null : <p class="ex-note">お知らせはまだありません。</p>}
+  </div></section>
+</Base>

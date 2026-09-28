@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.wrangler/
+.astro/
+public/admin/
+public/rag-admin/
+.cfauth/
+.dev.vars

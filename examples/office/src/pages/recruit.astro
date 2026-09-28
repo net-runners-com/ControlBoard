@@ -1,0 +1,25 @@
+---
+import { Render } from "@measured/puck";
+import config from "virtual:controlboard/config";
+import { getContent } from "@controlboard/core/runtime/content";
+import { getPage } from "@controlboard/core/runtime/pages";
+import { publishedJobs, isHiring } from "@controlboard/core/runtime/jobs";
+import Base from "../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const data = await getPage(env, "recruit", Astro.url, content);
+const open = (content.recruit || {}).hiring !== false;
+const jobs = publishedJobs(content.jobs);
+---
+<Base pageId="recruit" content={content} title={(content.pageTitles || {}).recruit || "採用情報"} en="Recruit">
+  <Render config={config.blocks.sub} data={data} metadata={{ site: content }} />
+  <section class="ex-sec"><div class="ex-wrap ex-narrow">
+    {!open ? <p class="ex-note">現在、募集は行っておりません。</p> : jobs.map((j) => (
+      <article class="ex-job">
+        <h2>{j.title}{isHiring(j) ? null : <span class="ex-closed">募集終了</span>}</h2>
+        <table>{(j.fields || []).filter((f) => f && f.label).map((f) => <tr><th>{f.label}</th><td>{f.value}</td></tr>)}</table>
+      </article>
+    ))}
+    {open ? <p class="ex-more"><a class="ex-btn" href="/contact">応募・お問い合わせ</a></p> : null}
+  </div></section>
+</Base>

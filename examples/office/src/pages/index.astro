@@ -1,0 +1,13 @@
+---
+import { Render } from "@measured/puck";
+import config from "virtual:controlboard/config";
+import { getContent } from "@controlboard/core/runtime/content";
+import { getPage } from "@controlboard/core/runtime/pages";
+import Base from "../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const data = await getPage(env, "home", Astro.url, content);
+---
+<Base pageId="home" content={content}>
+  <Render config={config.blocks.home} data={data} metadata={{ site: content }} />
+</Base>

@@ -1,0 +1,125 @@
+/* 作例「みどり会計事務所」のスタイル。管理画面の編集キャンバスにも読み込まれる（config の canvasCss）。 */
+:root{--primary:#1d7a55;--ink:#1b2a24;--sub:#5b6b64;--line:#e3e9e6;--tint:#f3f8f5;--radius:14px}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans JP",system-ui,sans-serif;color:var(--ink);line-height:1.8;background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+.ex-wrap{width:min(1120px,100% - 32px);margin-inline:auto}
+.ex-narrow{width:min(760px,100% - 32px)}
+
+.ex-noticebar{display:block;background:var(--primary);color:#fff;text-align:center;font-size:13px;padding:8px 16px;text-decoration:none}
+.ex-noticebar:hover{text-decoration:underline}
+.ex-header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.ex-header-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+.ex-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none;letter-spacing:.04em}
+.ex-logo-mark{display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:var(--primary);color:#fff;font-size:16px}
+.ex-nav{display:flex;gap:26px;font-size:14px}
+.ex-nav a{text-decoration:none;color:var(--sub);padding:4px 0;border-bottom:2px solid transparent}
+.ex-nav a:hover,.ex-nav a.is-on{color:var(--ink);border-color:var(--primary)}
+.ex-burger{display:none;font-size:22px;cursor:pointer}
+
+.ex-hero{background:linear-gradient(120deg,#0f3d2b,var(--primary));background-size:cover;background-position:center;color:#fff;padding:120px 0 110px}
+.ex-hero h1{font-size:clamp(32px,5vw,54px);line-height:1.35;margin:0 0 20px;white-space:pre-line;letter-spacing:.02em}
+.ex-eyebrow{display:inline-block;font-size:13px;letter-spacing:.12em;border:1px solid rgba(255,255,255,.5);border-radius:99px;padding:4px 14px;margin:0 0 22px}
+.ex-lead{max-width:34em;font-size:17px;opacity:.92;margin:0 0 34px}
+.ex-btn{display:inline-block;background:var(--primary);color:#fff;text-decoration:none;font-weight:700;padding:14px 30px;border-radius:99px;border:0;font:inherit;font-weight:700;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.ex-hero .ex-btn,.ex-btn.is-light{background:#fff;color:var(--primary)}
+.ex-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.15)}
+
+.ex-sec{padding:84px 0}
+.ex-sec.is-tint{background:var(--tint)}
+.ex-sec+.ex-sec:not(.is-tint){padding-top:0}
+.ex-h2{font-size:clamp(24px,3vw,32px);text-align:center;margin:0 0 44px;letter-spacing:.04em}
+.ex-h2::after{content:"";display:block;width:40px;height:3px;background:var(--primary);margin:14px auto 0;border-radius:2px}
+.ex-h2.is-left{text-align:left}
+.ex-h2.is-left::after{margin-left:0}
+.ex-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+
+.ex-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:32px 28px}
+.ex-num{font-size:34px;font-weight:700;color:var(--primary);opacity:.35;line-height:1}
+.ex-card h3{margin:14px 0 8px;font-size:19px}
+.ex-card p{margin:0;color:var(--sub);font-size:15px}
+
+.ex-split{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.ex-split.is-rev .ex-split-img{order:2}
+.ex-split-img img,.ex-ph{border-radius:var(--radius);aspect-ratio:4/3;object-fit:cover;width:100%}
+.ex-ph{display:grid;place-items:center;background:var(--tint);color:var(--sub);border:1px dashed var(--line)}
+.ex-rich p{margin:0 0 1em}
+.ex-rich a{color:var(--primary)}
+
+.ex-plan{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px 28px}
+.ex-plan.is-featured{border:2px solid var(--primary);box-shadow:0 14px 40px rgba(29,122,85,.14)}
+.ex-plan h3{margin:0;font-size:17px;color:var(--sub)}
+.ex-price{font-size:26px;font-weight:700;margin:6px 0 18px}
+.ex-plan ul{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.ex-plan li{padding:10px 0 10px 24px;border-bottom:1px solid var(--line);position:relative;font-size:15px}
+.ex-plan li::before{content:"✓";position:absolute;left:2px;color:var(--primary);font-weight:700}
+.ex-badge{position:absolute;top:-13px;left:28px;background:var(--primary);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:99px}
+.ex-note{color:var(--sub);font-size:14px;text-align:center;margin:24px 0 0}
+
+.ex-staff{text-align:center}
+.ex-staff img,.ex-avatar{width:132px;height:132px;border-radius:50%;object-fit:cover;margin:0 auto 18px}
+.ex-avatar{display:grid;place-items:center;background:var(--tint);color:var(--primary);font-size:44px;font-weight:700}
+.ex-role{margin:0;color:var(--primary);font-size:13px;font-weight:700}
+.ex-staff h3{margin:0 0 6px;font-size:20px}
+.ex-staff p:last-child{color:var(--sub);font-size:14px;margin:0}
+
+.ex-news{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.ex-news a{display:flex;gap:28px;padding:20px 6px;border-bottom:1px solid var(--line);text-decoration:none;transition:background .15s}
+.ex-news a:hover{background:var(--tint)}
+.ex-news time{color:var(--primary);font-weight:500;font-variant-numeric:tabular-nums;flex:none}
+.ex-more{text-align:center;margin:32px 0 0}
+.ex-more a:not(.ex-btn){color:var(--primary);font-weight:700;text-decoration:none}
+
+.ex-faq{border:1px solid var(--line);border-radius:12px;margin:0 0 12px;background:#fff}
+.ex-faq summary{cursor:pointer;padding:18px 22px;font-weight:700;list-style:none;position:relative}
+.ex-faq summary::before{content:"Q";color:var(--primary);margin-right:12px}
+.ex-faq summary::after{content:"+";position:absolute;right:22px;color:var(--sub)}
+.ex-faq[open] summary::after{content:"−"}
+.ex-faq p{margin:0;padding:0 22px 20px 50px;color:var(--sub)}
+
+.ex-cta{background:linear-gradient(120deg,#0f3d2b,var(--primary));color:#fff;text-align:center;padding:80px 0}
+.ex-cta h2{font-size:clamp(24px,3vw,32px);margin:0 0 10px}
+.ex-cta p{opacity:.9;margin:0 0 30px}
+.ex-cta-row{display:flex;gap:18px;justify-content:center;align-items:center;flex-wrap:wrap}
+.ex-tel{font-size:26px;font-weight:700;text-decoration:none;letter-spacing:.04em}
+
+.ex-pagehead{background:var(--tint);padding:64px 0 56px;border-bottom:1px solid var(--line)}
+.ex-pagehead p{margin:0;color:var(--primary);font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}
+.ex-pagehead h1{margin:4px 0 0;font-size:clamp(26px,4vw,38px)}
+
+.ex-job{border:1px solid var(--line);border-radius:var(--radius);padding:28px;margin:0 0 20px}
+.ex-job h2{margin:0 0 16px;font-size:20px}
+.ex-job table{width:100%;border-collapse:collapse}
+.ex-job th,.ex-job td{text-align:left;padding:12px 8px;border-top:1px solid var(--line);vertical-align:top;white-space:pre-line}
+.ex-job th{width:9em;color:var(--sub);font-weight:500}
+.ex-closed{font-size:12px;background:#eee;color:#666;border-radius:99px;padding:2px 10px;margin-left:10px;vertical-align:middle}
+
+.ex-form{display:grid;gap:18px}
+.ex-form label{display:grid;gap:6px;font-weight:500;font-size:14px}
+.ex-form input,.ex-form textarea{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:#fbfdfc}
+.ex-form input:focus,.ex-form textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(29,122,85,.15)}
+.ex-form .ex-btn{justify-self:start}
+.ex-lead-dark{color:var(--sub);margin:0 0 28px}
+.ex-done{background:var(--tint);border-radius:12px;padding:20px;text-align:center;font-weight:700}
+
+.ex-footer{background:#10241b;color:#c9d6cf;padding:56px 0 24px;font-size:14px}
+.ex-footer-in{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.ex-footer p{margin:0 0 4px}
+.ex-footer .ex-logo{color:#fff;margin-bottom:12px}
+.ex-footer-links{display:flex;gap:18px;align-items:flex-start}
+.ex-footer-links a{color:#c9d6cf}
+.ex-copy{text-align:center;margin:40px 0 0!important;opacity:.6;font-size:12px}
+
+@media (max-width:800px){
+  .ex-grid3,.ex-split{grid-template-columns:1fr}
+  .ex-split.is-rev .ex-split-img{order:0}
+  .ex-split{gap:28px}
+  .ex-sec{padding:60px 0}
+  .ex-hero{padding:84px 0 76px}
+  .ex-burger{display:block}
+  .ex-nav{display:none;position:absolute;top:68px;left:0;right:0;background:#fff;flex-direction:column;gap:0;border-bottom:1px solid var(--line)}
+  .ex-nav a{padding:14px 20px;border-bottom:1px solid var(--line)}
+  #ex-nav:checked~.ex-nav{display:flex}
+  .ex-news a{flex-direction:column;gap:2px}
+}

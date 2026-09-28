@@ -10,6 +10,7 @@ Astro + Cloudflare Pages のサイトに、管理画面（ログイン・ユー�
 | `packages/admin` | 管理画面（React）。サイトのビルド時に、そのサイトの Puck ブロックと一緒にビルドされる |
 | `packages/cli` | `controlboard` コマンド（init / create-owner / setup / deploy / rag-index） |
 | `playground` | 動作確認用のサイト（ローカル専用） |
+| `examples/office` | 作例のサイト（架空の会計事務所）。`pnpm dev` で http://localhost:4410/ |
 
 データは KV（binding `CMS`）と R2（binding `MEDIA`）に置く。
 
@@ -43,7 +44,7 @@ export default defineConfig({
 import { homeConfig, subConfig } from "./src/blocks.jsx";
 
 export default {
-  site: { name: "○○事務所", url: "https://example.jp", logo: "/logo.png", manualUrl: "", canvasCss: "/site.css" },
+  site: { name: "○○事務所", url: "https://example.jp", logo: "/logo.png", manualUrl: "", canvasCss: "/site.css", adminColor: "#2563eb" },  // adminColor: 管理画面の色（省略時は青）
   blocks: { home: homeConfig, sub: subConfig },          // Puck の設定。quick: [{ type, t, d }] で「追加」の先頭に出す部品を選べる
   pages: {                                               // 固定ページ。home は必須
     home: { label: "トップページ", url: "/" },
@@ -93,8 +94,35 @@ SEO は `@controlboard/core/seo` の `seoFor(pageId, content, url)` と `orgJson
 | `controlboard create-owner --user <名前> [--remote]` | 最初のオーナーを作る（既定はローカルの KV） |
 | `controlboard deploy --name <名前> [--stg] [--dry-run]` | ビルドしてデプロイ。本番は main ブランチからだけ・確認あり |
 | `controlboard rag-index` | `rag-docs/` からアシスタントの索引を作る |
+| `controlboard mcp --url <サイトのURL> [--token <t>] [--basic <user:pass>]` | AI から操作するための MCP サーバー（stdio） |
 
 アカウントはサイトごとに cfauth（`.cfauth`）で分ける。
+
+## AI から操作する（MCP）
+
+管理画面でできることは、Claude などの AI から MCP 経由でもできる。
+
+1. 管理画面の「AI連携」でトークンを発行する（表示は発行直後の一度だけ）。権限は発行した人と同じ
+2. AI のクライアントに登録する
+
+```bash
+# Claude Code
+claude mcp add controlboard -e CONTROLBOARD_TOKEN=cb_... -- npx controlboard mcp --url https://example.jp
+```
+
+```json
+// Claude Desktop など
+{ "mcpServers": { "controlboard": {
+  "command": "npx", "args": ["controlboard", "mcp", "--url", "https://example.jp"],
+  "env": { "CONTROLBOARD_TOKEN": "cb_..." }
+} } }
+```
+
+- ツール: サイト構成の取得（`get_site_schema`）、共通の内容・お知らせ・募集要項、ページの取得・保存・追加・削除、プレビュー、変更履歴と復元、画像、短縮リンク、お問い合わせ、統計、マニュアルへの質問、ユーザー管理
+- 取り消せない操作（削除・復元・ユーザー変更など）には `destructiveHint` を付けている
+- トークンは `x-controlboard-token` ヘッダーで送る。staging の Basic 認証は `--basic` か `CONTROLBOARD_BASIC` で別に渡す
+- 持ち主を停止・削除すると、そのトークンも使えなくなる。トークンの発行と取り消しは管理画面（ログイン）からだけ
+- 環境変数 `CONTROLBOARD_URL` / `CONTROLBOARD_TOKEN` / `CONTROLBOARD_BASIC` でも渡せる
 
 ## 環境変数
 

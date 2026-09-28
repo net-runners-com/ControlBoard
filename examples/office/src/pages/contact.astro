@@ -1,0 +1,33 @@
+---
+import { Render } from "@measured/puck";
+import config from "virtual:controlboard/config";
+import { getContent } from "@controlboard/core/runtime/content";
+import { getPage } from "@controlboard/core/runtime/pages";
+import Base from "../layouts/Base.astro";
+const env = Astro.locals.runtime.env;
+const content = await getContent(env, Astro.url);
+const data = await getPage(env, "contact", Astro.url, content);
+const c = content.contact || {};
+---
+<Base pageId="contact" content={content} title={(content.pageTitles || {}).contact || "お問い合わせ"} en="Contact">
+  <Render config={config.blocks.sub} data={data} metadata={{ site: content }} />
+  <section class="ex-sec"><div class="ex-wrap ex-narrow">
+    <p class="ex-lead-dark">お電話（{c.tel}／{c.hours}）またはフォームからどうぞ。2営業日以内にご返信します。</p>
+    <form id="f" class="ex-form">
+      <label>お名前<input name="name" required /></label>
+      <label>メールアドレス<input name="mail" type="email" required /></label>
+      <label>ご相談内容<textarea name="detail" rows="6" required></textarea></label>
+      <button class="ex-btn">送信する</button>
+    </form>
+    <p id="done" class="ex-done" hidden>送信しました。ありがとうございました。</p>
+  </div></section>
+  <script>
+    const f = document.getElementById("f");
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(f));
+      const res = await fetch("/api/inquiry", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) { f.hidden = true; document.getElementById("done").hidden = false; }
+    });
+  </script>
+</Base>
